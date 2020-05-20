@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 public class PostsResponseDto {
+
     private Long id;
     private String title;
     private String content;

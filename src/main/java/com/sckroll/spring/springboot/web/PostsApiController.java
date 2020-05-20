@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 public class PostsApiController {
+
     private final PostsService postsService;
 
     // 게시글 등록
