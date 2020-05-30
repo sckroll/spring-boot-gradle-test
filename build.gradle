@@ -37,6 +37,7 @@ dependencies {
     testCompile('org.springframework.security:spring-security-test')
 
     // Gradle 5 이상에서의 Lombok 충돌 방지
+    // 출처: https://eblo.tistory.com/70
     compileOnly("org.projectlombok:lombok")
     testCompileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
