@@ -30,8 +30,8 @@ chmod +x $JAR_NAME
 # 이렇게 하지 않으면 nohup.out 파일이 생기지 않고, CodeDeploy 로그에 표준 입출력이 출력됨
 # nohup이 끝나기 전까지 CodeDeploy도 끝나지 않으므로 반드시 아래와 같이 작성할 것
 echo "> $JAR_NAME 실행"
-nohup java -jar -Dspring.config.location=classpath:/application.properties, \
-classpath:/application-real.properties, \
-/home/ec2-user/app/application-oauth.properties, \
+nohup java -jar -Dspring.config.location=classpath:/application.properties,\
+classpath:/application-real.properties,\
+/home/ec2-user/app/application-oauth.properties,\
 /home/ec2-user/app/application-real-db.properties \
 -Dspring.profiles.active=real $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
