@@ -24,6 +24,27 @@ cache:
 # 여기서는 프로젝트 내부에 둔 gradlew을 통해 clean & build 수행
 script: "./gradlew clean build"
 
+# deploy 명령어 실행 전에 수행되는 명령어
+# CodeDeploy는 Jar 파일을 인식하지 못하기 때문에
+# Jar + 기타 설정 파일들을 모아 zip 파일로 압축
+# zip할 때 명령어 마지막 위치는 본인의 프로젝트 이름
+before_deploy:
+  - zip -r spring-boot-gradle-test *
+  - mkdir -p deploy
+  - mv spring-boot-gradle-test.zip deploy/spring-boot-gradle-test.zip
+
+# 외부 서비스(S3, CodeDeploy 등)와 연동될 행위들을 선언
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY        # Travis repo setting에 설정된 값
+    secret_access_key: $AWS_SECRET_KEY    # Travis repo setting에 설정된 값
+    bucket: sckroll-springboot-build      # S3 버킷
+    region: ap-northeast2
+    skip_cleanup: true
+    acl: private        # zip 파일 접근을 private으로
+    local_dir: deploy   # before_deploy에서 생성한 디렉토리, 해당 위치의 파일들만 S3에 전송
+    wait-until-deployed: true
+
 # CI 실행 완료 시 메일로 알람
 notifications:
   email:
