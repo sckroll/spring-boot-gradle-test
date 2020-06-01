@@ -27,6 +27,7 @@ script: "./gradlew clean build"
 # deploy 명령어 실행 전에 수행되는 명령어
 # CodeDeploy는 Jar 파일을 인식하지 못하기 때문에
 # Jar + 기타 설정 파일들을 모아 zip 파일로 압축
+# zip할 때 명령어 세 번째 위치는 본인의 프로젝트 이름
 before_deploy:
   - zip -r spring-boot-gradle-test *
   - mkdir -p deploy
@@ -45,7 +46,7 @@ deploy:
     access_key_id: $AWS_ACCESS_KEY        # Travis repo setting에 설정된 값
     secret_access_key: $AWS_SECRET_KEY    # Travis repo setting에 설정된 값
     bucket: sckroll-springboot-build      # S3 버킷
-    region: ap-northeast2
+    region: ap-northeast-2
     skip_cleanup: true
     acl: private        # zip 파일 접근을 private으로
     local_dir: deploy   # before_deploy에서 생성한 디렉토리, 해당 위치의 파일들만 S3에 전송
