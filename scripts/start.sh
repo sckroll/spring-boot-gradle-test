@@ -1,24 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-REPOSITORY=/home/ec2-user/app/step2
+ABSPATH=$(readlink -f $0)
+ABSDIR=$(dirname $ABSPATH)
+source ${ABSDIR}/profile.sh
+
+REPOSITORY=/home/ec2-user/app/step3
 PROJECT_NAME=spring-boot-gradle-test
 
 echo "> Build 파일 복사"
 cp $REPOSITORY/zip/*.jar $REPOSITORY/
-
-# spring-boot-gradle-test으로 된 jar 프로세스를 찾은 뒤 awk '{print $1}'로 ID 검색
-echo "> 현재 구동 중인 애플리케이션 pid 확인"
-CURRENT_PID=$(pgrep -fl spring-boot-gradle-test | grep jar | awk '{print $1}')
-
-echo "현재 구동 중인 애플리케이션 pid: $CURRENT_PID"
-if [ -z "$CURRENT_PID" ]
-then
-    echo "> 현재 구동 중인 애플리케이션이 없으므로 종료하지 않습니다."
-else
-    echo "> kill -15 $CURRENT_PID"
-    kill -15 $CURRENT_PID
-    sleep 5
-fi
 
 echo "> 새 애플리케이션 배포"
 JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
@@ -31,8 +21,14 @@ chmod +x $JAR_NAME
 # 이렇게 하지 않으면 nohup.out 파일이 생기지 않고, CodeDeploy 로그에 표준 입출력이 출력됨
 # nohup이 끝나기 전까지 CodeDeploy도 끝나지 않으므로 반드시 아래와 같이 작성할 것
 echo "> $JAR_NAME 실행"
+IDLE_PROFILE=$(find_idle_profile)
+
+# step2의 deploy.sh와 비슷하지만
+# classpath:/application-$IDLE_PROFILE.properties 와
+# -Dspring.profiles.active=$IDLE_PROFILE $JAR_NAME 가 다름 (real -> $IDLE_PROFILE)
+echo "> $JAR_NAME 를 profile=$IDLE_PROFILE 로 실행합니다."
 nohup java -jar -Dspring.config.location=classpath:/application.properties,\
-classpath:/application-real.properties,\
+classpath:/application-$IDLE_PROFILE.properties,\
 /home/ec2-user/app/application-oauth.properties,\
 /home/ec2-user/app/application-real-db.properties \
--Dspring.profiles.active=real $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
+-Dspring.profiles.active=$IDLE_PROFILE $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
