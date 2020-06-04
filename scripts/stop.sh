@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # 현재 stop.sh가 속해 있는 경로 탐색
 # start.sh와 같이 profile.sh의 여러 function을 사용할 수 있게 됨
 ABSPATH=$(readlink -f $0)
